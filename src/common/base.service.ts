@@ -11,7 +11,7 @@ export abstract class BaseService<T extends BaseId, C, U> {
   }
 
   get(id: number): T {
-    return this.items.find((x: any) => x.id === id);
+    return this.items.find((x: any) => Number(x.id) === Number(id));
   }
 
   create(dto: C): T {
@@ -25,13 +25,20 @@ export abstract class BaseService<T extends BaseId, C, U> {
   }
 
   update(id: number, dto: U): T {
-    const item = this.items.find((x: any) => x.id === id);
-    Object.assign(item, dto);
-    return item;
+    const itemIndex = this.items.findIndex((x) => Number(x.id) === Number(id));
+    if (itemIndex === -1) {
+      return null;
+    }
+    const itemToUpdate = this.items[itemIndex];
+    this.items[itemIndex] = {
+      ...itemToUpdate,
+      ...dto,
+    };
+    return this.items[itemIndex];
   }
 
   delete(id: number): void {
-    const index = this.items.findIndex((x: any) => x.id === id);
+    const index = this.items.findIndex((x: any) => Number(x.id) === Number(id));
     if (index > -1) {
       this.items.splice(index, 1);
     }

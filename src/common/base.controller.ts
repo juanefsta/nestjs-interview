@@ -1,7 +1,7 @@
 import { Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 
 export abstract class BaseController<T, C, U> {
-  constructor(protected readonly service: any) {}
+  constructor(protected readonly service: any) { }
 
   @Get()
   index(): T[] {
@@ -14,7 +14,7 @@ export abstract class BaseController<T, C, U> {
   }
 
   @Post()
-  create(@Body() dto: C): T {
+  create?(@Body() dto: C): T {
     return this.service.create(dto);
   }
 
