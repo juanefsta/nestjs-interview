@@ -5,8 +5,6 @@ import { TodoListsService } from './todo_lists.service';
 @Module({
   imports: [],
   controllers: [TodoListsController],
-  providers: [
-    { provide: TodoListsService, useValue: new TodoListsService([]) },
-  ],
+  providers: [TodoListsService],
 })
 export class TodoListsModule {}
