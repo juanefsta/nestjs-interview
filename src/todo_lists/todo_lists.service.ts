@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list';
 import { UpdateTodoListDto } from './dtos/update-todo_list';
 import { TodoList } from '../interfaces/todo_list.interface';
+import { nextId } from 'src/common/utils/id.util';
+import { BaseService } from 'src/common/base.service';
 
 @Injectable()
-export class TodoListsService {
+export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, UpdateTodoListDto> {
   private readonly todolists: TodoList[];
 
-  constructor(todoLists: TodoList[] = []) {
-    this.todolists = todoLists;
+  constructor() {
+    super();
+    this.todolists = [];
   }
 
   all(): TodoList[] {
@@ -21,7 +24,7 @@ export class TodoListsService {
 
   create(dto: CreateTodoListDto): TodoList {
     const todoList: TodoList = {
-      id: this.nextId(),
+      id: nextId(this.todolists),
       name: dto.name,
     };
 
@@ -45,14 +48,5 @@ export class TodoListsService {
     if (index > -1) {
       this.todolists.splice(index, 1);
     }
-  }
-
-  private nextId(): number {
-    const last = this.todolists
-      .map((x) => x.id)
-      .sort()
-      .reverse()[0];
-
-    return last ? last + 1 : 1;
   }
 }

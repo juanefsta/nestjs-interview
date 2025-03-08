@@ -11,10 +11,13 @@ import { CreateTodoListDto } from './dtos/create-todo_list';
 import { UpdateTodoListDto } from './dtos/update-todo_list';
 import { TodoList } from '../interfaces/todo_list.interface';
 import { TodoListsService } from './todo_lists.service';
+import { BaseController } from 'src/common/base.controller';
 
 @Controller('api/todolists')
-export class TodoListsController {
-  constructor(private todoListsService: TodoListsService) {}
+export class TodoListsController extends BaseController<TodoList, CreateTodoListDto, UpdateTodoListDto>{
+  constructor(private todoListsService: TodoListsService) {
+    super(todoListsService);
+  }
 
   @Get()
   index(): TodoList[] {
@@ -22,8 +25,8 @@ export class TodoListsController {
   }
 
   @Get('/:todoListId')
-  show(@Param() param: { todoListId: number }): TodoList {
-    return this.todoListsService.get(param.todoListId);
+  show(@Param('todoListId') todoListId: number): TodoList {
+    return this.todoListsService.get(todoListId);
   }
 
   @Post()
@@ -33,14 +36,14 @@ export class TodoListsController {
 
   @Put('/:todoListId')
   update(
-    @Param() param: { todoListId: number },
+    @Param('todoListId') todoListId: number,
     @Body() dto: UpdateTodoListDto,
   ): TodoList {
-    return this.todoListsService.update(param.todoListId, dto);
+    return this.todoListsService.update(todoListId, dto);
   }
 
   @Delete('/:todoListId')
-  delete(@Param() param: { todoListId: number }): void {
-    this.todoListsService.delete(param.todoListId);
+  delete(@Param('todoListId') todoListId: number): void {
+    this.todoListsService.delete(todoListId);
   }
 }
