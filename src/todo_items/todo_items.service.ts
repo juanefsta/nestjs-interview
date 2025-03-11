@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
 import { BaseService } from 'src/common/base.service';
-import { TodoItem } from 'src/interfaces/todo_item.interface';
-import { nextId } from 'src/common/utils/id.util';
+import { TodoItem } from 'src/common/interfaces/todo_item.interface';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export class TodoItemsService extends BaseService<TodoItem, CreateTodoItemDto, UpdateTodoItemDto> {
 
-  constructor() {
-    super();
+  constructor(protected readonly syncService: QueueService<TodoItem>) {
+    super(syncService);
   }
 
   findAllByKeyId(listId: number): TodoItem[] {

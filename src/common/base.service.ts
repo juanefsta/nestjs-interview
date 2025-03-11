@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { nextId } from './utils/id.util';
 import { BaseId } from './id.interface';
+import { QueueService } from 'src/queue/queue.service';
 
 @Injectable()
 export abstract class BaseService<T extends BaseId, C, U> {
   protected readonly items: T[] = [];
+
+  constructor(protected readonly syncService: QueueService<T>) { }
 
   all(): T[] {
     return this.items;
@@ -21,6 +24,7 @@ export abstract class BaseService<T extends BaseId, C, U> {
     };
 
     this.items.push(newItem);
+    this.syncService.syncCreate(newItem);
     return newItem;
   }
 
@@ -34,13 +38,19 @@ export abstract class BaseService<T extends BaseId, C, U> {
       ...itemToUpdate,
       ...dto,
     };
+
+    this.syncService.syncUpdate(this.items[itemIndex]);
+
     return this.items[itemIndex];
   }
 
   delete(id: number): void {
     const index = this.items.findIndex((x: any) => Number(x.id) === Number(id));
     if (index > -1) {
+      const deletedItem = this.items[index];
       this.items.splice(index, 1);
+
+      this.syncService.syncDelete(deletedItem.id);
     }
   }
 }

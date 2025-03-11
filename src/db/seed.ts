@@ -20,7 +20,5 @@ export async function seed(app: NestExpressApplication) {
     console.log('🌱 Succesfully seeded.');
   } catch (error) {
     console.error('❌ Error while seeding:', error);
-  } finally {
-    await app.close();
   }
 }
