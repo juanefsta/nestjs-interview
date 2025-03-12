@@ -42,7 +42,7 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
       });
 
       this.items.splice(index, 1);
-      this.syncService.syncDelete(deletedItem.id, this.entityName);
+      this.syncService.syncDelete(deletedItem, this.entityName);
     }
   }
 }

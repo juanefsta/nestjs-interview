@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
+import { TodoItem } from 'src/common/interfaces/todo_item.interface';
 import { TodoList } from 'src/common/interfaces/todo_list.interface';
 
 @Injectable()
@@ -30,37 +31,37 @@ export class ExternalApiService {
         }
     }
 
-    async deleteTodoList(todoListId: number) {
+    async deleteTodoList(todoList: TodoList) {
         try {
-            const result = await (lastValueFrom(this.httpService.delete(`${this.todoListUrl}/${todoListId}`)));
+            const result = await (lastValueFrom(this.httpService.delete(`${this.todoListUrl}/${todoList.id}`)));
             return result.data;
         } catch (error) {
             if (error.response?.status === 404) {
-                console.log(`TodoList ${todoListId} already deleted.`);
+                console.log(`TodoList ${todoList.id} already deleted.`);
             } else {
-                throw new Error(`Failed to delete TodoList ${todoListId}: ${error.message}`);
+                throw new Error(`Failed to delete TodoList ${todoList.id}: ${error.message}`);
             }
         }
     }
 
-    async updateTodoItem(todoList: TodoList) {
+    async updateTodoItem(todoItem: TodoItem) {
         try {
-            const result = await (lastValueFrom(this.httpService.patch(`${this.todoListUrl}/${todoList.id}`, todoList)));
+            const result = await (lastValueFrom(this.httpService.patch(`${this.todoListUrl}/${todoItem.listId}/todoitems/${todoItem.id}`, todoItem)));
             return result.data;
         } catch (error) {
             throw new Error(`Failed to update TodoList: ${error.message}`);
         }
     }
 
-    async deleteTodoItem(todoListId: number) {
+    async deleteTodoItem(todoItem: TodoItem) {
         try {
-            const result = await (lastValueFrom(this.httpService.delete(`${this.todoListUrl}/${todoListId}`)));
+            const result = await (lastValueFrom(this.httpService.delete(`${this.todoListUrl}/${todoItem.id}`)));
             return result.data;
         } catch (error) {
             if (error.response?.status === 404) {
-                console.log(`TodoList ${todoListId} already deleted.`);
+                console.log(`TodoList ${todoItem.id} already deleted.`);
             } else {
-                throw new Error(`Failed to delete TodoList ${todoListId}: ${error.message}`);
+                throw new Error(`Failed to delete TodoList ${todoItem.id}: ${error.message}`);
             }
         }
     }

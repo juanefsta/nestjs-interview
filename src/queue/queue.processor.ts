@@ -25,13 +25,13 @@ export class QueueProcessor {
                     await this.externalApiService.updateTodoList(data);
                     break;
                 case 'deleteTodoList':
-                    await this.externalApiService.deleteTodoList(data.id);
+                    await this.externalApiService.deleteTodoList(data);
                     break;
                 case 'updateTodoItem':
                     await this.externalApiService.updateTodoItem(data);
                     break;
                 case 'deleteTodoItem':
-                    await this.externalApiService.deleteTodoItem(data.id);
+                    await this.externalApiService.deleteTodoItem(data);
                     break;
                 default:
                     this.logger.warn(`Unknown operation: ${operation}`);

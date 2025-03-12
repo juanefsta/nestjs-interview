@@ -31,11 +31,11 @@ export class QueueService<T> {
         }, this.defaultSyncOptions);
     }
 
-    async syncDelete(itemId: number, entityName: EntityName) {
+    async syncDelete(item: T, entityName: EntityName) {
         const operation = `delete${entityName}`;
         await this.syncQueue.add('synchronize', {
             operation,
-            data: { id: itemId },
+            data: item,
         }, this.defaultSyncOptions);
     }
 }

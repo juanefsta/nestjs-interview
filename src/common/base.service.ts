@@ -57,7 +57,7 @@ export abstract class BaseService<T extends BaseId, C, U> {
       this.items.splice(index, 1);
 
       if (!disableSync) {
-        this.syncService.syncDelete(deletedItem.id, this.entityName);
+        this.syncService.syncDelete(deletedItem, this.entityName);
       }
 
     }
