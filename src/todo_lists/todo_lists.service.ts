@@ -6,6 +6,7 @@ import { BaseService } from 'src/common/base.service';
 import { QueueService } from 'src/queue/queue.service';
 import { TodoItemsService } from 'src/todo_items/todo_items.service';
 
+type OperationType = 'create' | 'update' | 'delete';
 @Injectable()
 export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, UpdateTodoListDto> {
 
@@ -42,7 +43,21 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
       });
 
       this.items.splice(index, 1);
-      this.syncService.syncDelete(deletedItem, this.entityName);
+      this.syncTodoList(deletedItem, 'delete');
+    }
+  }
+
+  syncTodoList(todoList: TodoList, operation: OperationType): void {
+    switch (operation) {
+      case 'create':
+        this.syncService.syncCreate(todoList, this.entityName);
+        break;
+      case 'update':
+        this.syncService.syncUpdate(todoList, this.entityName);
+        break;
+      case 'delete':
+        this.syncService.syncDelete(todoList, this.entityName);
+        break;
     }
   }
 }
