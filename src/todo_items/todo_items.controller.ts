@@ -3,17 +3,14 @@ import { TodoItemsService } from './todo_items.service';
 import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
 import { TodoItem } from 'src/common/interfaces/todo_item.interface';
-import { BaseNestedController } from 'src/common/base.nested-controller';
 
 @Controller('api/todoLists/:listId/todoItems')
-export class TodoItemsController extends BaseNestedController<TodoItem, CreateTodoItemDto, UpdateTodoItemDto> {
-  constructor(private todoItemService: TodoItemsService) {
-    super(todoItemService);
-  }
+export class TodoItemsController {
+  private readonly syncDisabled = true;
+  constructor(private todoItemService: TodoItemsService) { }
 
   @Get()
   index(@Param('listId') listId: number): TodoItem[] {
-
     return this.todoItemService.findAllByKeyId(listId);
   }
 
@@ -25,7 +22,7 @@ export class TodoItemsController extends BaseNestedController<TodoItem, CreateTo
   @Post()
   create(@Param('listId') listId: number, @Body() createTodoItemDto: CreateTodoItemDto): TodoItem {
     const dto: CreateTodoItemDto = { ...createTodoItemDto, listId, completed: false };
-    return this.todoItemService.create(dto);
+    return this.todoItemService.create(dto, this.syncDisabled);
   }
 
   @Put('/:todoItemId')

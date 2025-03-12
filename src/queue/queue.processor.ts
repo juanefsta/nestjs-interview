@@ -3,32 +3,45 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ExternalApiService } from 'src/external-api/external-api.service';
 
-@Processor('todoListQueue')
+@Processor('challengeQueue')
 export class QueueProcessor {
 
     private readonly logger = new Logger(QueueProcessor.name);
     constructor(
-        // private readonly todoService: TodoService,
         private readonly externalApiService: ExternalApiService,
     ) { }
 
     @Process('synchronize')
     async handleSync(job: Job) {
+        this.logger.log(`🔄 Attempt ${job.attemptsMade + 1} of ${job.opts.attempts}`);
 
         const { operation, data } = job.data;
+        try {
+            switch (operation) {
+                case 'createTodoList':
+                    await this.externalApiService.createTodoList(data);
+                    break;
+                case 'updateTodoList':
+                    await this.externalApiService.updateTodoList(data);
+                    break;
+                case 'deleteTodoList':
+                    await this.externalApiService.deleteTodoList(data.id);
+                    break;
+                case 'updateTodoItem':
+                    await this.externalApiService.updateTodoItem(data);
+                    break;
+                case 'deleteTodoItem':
+                    await this.externalApiService.deleteTodoItem(data.id);
+                    break;
+                default:
+                    this.logger.warn(`Unknown operation: ${operation}`);
+                    throw new Error(`Unknown operation: ${operation}`);
+            }
 
-        switch (operation) {
-            case 'create':
-                await this.externalApiService.createTodoList(data);
-                break;
-            case 'update':
-                await this.externalApiService.updateTodoList(data);
-                break;
-            case 'delete':
-                await this.externalApiService.deleteTodoList(data.id);
-                break;
-            default:
-                console.warn('Unknown operation:', operation);
+            this.logger.log(`✅ Job ${job.id} completed successfully. Successfully processed ${operation} for item ${data.id}`);
+        } catch (error) {
+            this.logger.error(`❌ Job ${job.id} failed for operation -${operation}- and item ${data.id}. Attempt ${job.attemptsMade + 1}. Error: ${error.message}`);
+            throw error;
         }
     }
 }

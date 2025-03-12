@@ -9,10 +9,10 @@ import { BullAdapter } from "@bull-board/api/bullAdapter";
 @Module({
     imports: [
         BullModule.registerQueue({
-            name: 'todoListQueue',
+            name: 'challengeQueue',
         }),
         BullBoardModule.forFeature({
-            name: 'todoListQueue',
+            name: 'challengeQueue',
             adapter: BullAdapter,
         }), ExternalApiModule],
     providers: [QueueProcessor, QueueService],

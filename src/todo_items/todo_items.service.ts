@@ -9,7 +9,7 @@ import { QueueService } from 'src/queue/queue.service';
 export class TodoItemsService extends BaseService<TodoItem, CreateTodoItemDto, UpdateTodoItemDto> {
 
   constructor(protected readonly syncService: QueueService<TodoItem>) {
-    super(syncService);
+    super(syncService, 'TodoItem');
   }
 
   findAllByKeyId(listId: number): TodoItem[] {

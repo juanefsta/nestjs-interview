@@ -6,6 +6,7 @@ import { QueueModule } from 'src/queue/queue.module';
 @Module({
   imports: [QueueModule],
   controllers: [TodoItemsController],
-  providers: [TodoItemsService]
+  providers: [TodoItemsService],
+  exports: [TodoItemsService]
 })
 export class TodoItemsModule { }

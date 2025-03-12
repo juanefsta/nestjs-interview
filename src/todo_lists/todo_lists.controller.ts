@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
+  Param,
   Post,
 } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list.dto';
@@ -15,9 +18,24 @@ export class TodoListsController extends BaseController<TodoList, CreateTodoList
     super(todoListsService);
   }
 
+  @Get()
+  index(): TodoList[] {
+    return this.todoListsService.all();
+  }
+
+  @Get('/:id')
+  show(@Param('id') id: number): TodoList {
+    return this.todoListsService.get(id);
+  }
+
   @Post()
   create(@Body() createTodoListDto: CreateTodoListDto): TodoList {
     const dto = { ...createTodoListDto, items: [] };
     return this.todoListsService.create(dto);
+  }
+
+  @Delete('/:id')
+  delete(@Param('id') id: number): void {
+    this.todoListsService.delete(id);
   }
 }

@@ -3,11 +3,12 @@ import { nextId } from './utils/id.util';
 import { BaseId } from './id.interface';
 import { QueueService } from 'src/queue/queue.service';
 
+export type EntityName = 'TodoList' | 'TodoItem';
 @Injectable()
 export abstract class BaseService<T extends BaseId, C, U> {
   protected readonly items: T[] = [];
 
-  constructor(protected readonly syncService: QueueService<T>) { }
+  constructor(protected readonly syncService: QueueService<T>, protected readonly entityName: EntityName) { }
 
   all(): T[] {
     return this.items;
@@ -17,18 +18,21 @@ export abstract class BaseService<T extends BaseId, C, U> {
     return this.items.find((x: any) => Number(x.id) === Number(id));
   }
 
-  create(dto: C): T {
+  create(dto: C, disableSync?: boolean): T {
     const newItem: any = {
       id: nextId(this.items),
       ...dto,
     };
 
     this.items.push(newItem);
-    this.syncService.syncCreate(newItem);
+
+    if (!disableSync) {
+      this.syncService.syncCreate(newItem, this.entityName);
+    }
     return newItem;
   }
 
-  update(id: number, dto: U): T {
+  update(id: number, dto: U, disableSync?: boolean): T {
     const itemIndex = this.items.findIndex((x) => Number(x.id) === Number(id));
     if (itemIndex === -1) {
       return null;
@@ -39,18 +43,23 @@ export abstract class BaseService<T extends BaseId, C, U> {
       ...dto,
     };
 
-    this.syncService.syncUpdate(this.items[itemIndex]);
+    if (!disableSync) {
+      this.syncService.syncUpdate(this.items[itemIndex], this.entityName);
+    }
 
     return this.items[itemIndex];
   }
 
-  delete(id: number): void {
+  delete(id: number, disableSync?: boolean): void {
     const index = this.items.findIndex((x: any) => Number(x.id) === Number(id));
     if (index > -1) {
       const deletedItem = this.items[index];
       this.items.splice(index, 1);
 
-      this.syncService.syncDelete(deletedItem.id);
+      if (!disableSync) {
+        this.syncService.syncDelete(deletedItem.id, this.entityName);
+      }
+
     }
   }
 }
