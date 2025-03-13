@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { nextId } from './utils/id.util';
-import { BaseId } from './id.interface';
 import { QueueService } from 'src/queue/queue.service';
+import { BaseInterface } from './interfaces/base.interface';
 
 export type EntityName = 'TodoList' | 'TodoItem';
 @Injectable()
-export abstract class BaseService<T extends BaseId, C, U> {
+export abstract class BaseService<T extends BaseInterface, C, U> {
   protected readonly items: T[] = [];
 
-  constructor(protected readonly syncService: QueueService<T>, protected readonly entityName: EntityName) { }
+  constructor(protected readonly queueService: QueueService<T>, protected readonly entityName: EntityName) { }
 
   all(): T[] {
     return this.items;
@@ -19,15 +19,18 @@ export abstract class BaseService<T extends BaseId, C, U> {
   }
 
   create(dto: C, disableSync?: boolean): T {
+    const now = new Date();
     const newItem: any = {
       id: nextId(this.items),
       ...dto,
+      created_at: new Date(),
+      updated_at: new Date(),
     };
 
     this.items.push(newItem);
 
     if (!disableSync) {
-      this.syncService.syncCreate(newItem, this.entityName);
+      this.queueService.syncCreate(newItem, this.entityName);
     }
     return newItem;
   }
@@ -41,10 +44,11 @@ export abstract class BaseService<T extends BaseId, C, U> {
     this.items[itemIndex] = {
       ...itemToUpdate,
       ...dto,
+      updated_at: new Date(),
     };
 
     if (!disableSync) {
-      this.syncService.syncUpdate(this.items[itemIndex], this.entityName);
+      this.queueService.syncUpdate(this.items[itemIndex], this.entityName);
     }
 
     return this.items[itemIndex];
@@ -57,7 +61,7 @@ export abstract class BaseService<T extends BaseId, C, U> {
       this.items.splice(index, 1);
 
       if (!disableSync) {
-        this.syncService.syncDelete(deletedItem, this.entityName);
+        this.queueService.syncDelete(deletedItem, this.entityName);
       }
 
     }

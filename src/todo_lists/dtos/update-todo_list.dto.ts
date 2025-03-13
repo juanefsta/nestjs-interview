@@ -1,3 +1,4 @@
 export class UpdateTodoListDto {
-  name: string;
+  name?: string;
+  updated_at?: Date;
 }

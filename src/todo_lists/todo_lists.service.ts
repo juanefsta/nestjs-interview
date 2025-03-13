@@ -10,8 +10,8 @@ type OperationType = 'create' | 'update' | 'delete';
 @Injectable()
 export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, UpdateTodoListDto> {
 
-  constructor(protected readonly syncService: QueueService<TodoList>, protected readonly todoItemsService: TodoItemsService) {
-    super(syncService, 'TodoList');
+  constructor(protected readonly queueService: QueueService<TodoList>, protected readonly todoItemsService: TodoItemsService) {
+    super(queueService, 'TodoList');
   }
 
   all(): TodoList[] {
@@ -32,31 +32,32 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
   }
 
 
-  delete(id: number): void {
+  delete(id: number, disableSync?: boolean): void {
     const index = this.items.findIndex((x: any) => Number(x.id) === Number(id));
     if (index > -1) {
       const deletedItem = this.items[index];
-
       const itemsToDelete = this.todoItemsService.findAllByKeyId(deletedItem.id);
       itemsToDelete.forEach((item) => {
         this.todoItemsService.delete(item.id);
       });
 
       this.items.splice(index, 1);
-      this.syncTodoList(deletedItem, 'delete');
+      if (!disableSync) {
+        this.syncTodoList(deletedItem, 'delete');
+      }
     }
   }
 
   syncTodoList(todoList: TodoList, operation: OperationType): void {
     switch (operation) {
       case 'create':
-        this.syncService.syncCreate(todoList, this.entityName);
+        this.queueService.syncCreate(todoList, this.entityName);
         break;
       case 'update':
-        this.syncService.syncUpdate(todoList, this.entityName);
+        this.queueService.syncUpdate(todoList, this.entityName);
         break;
       case 'delete':
-        this.syncService.syncDelete(todoList, this.entityName);
+        this.queueService.syncDelete(todoList, this.entityName);
         break;
     }
   }

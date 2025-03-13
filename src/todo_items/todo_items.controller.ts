@@ -6,7 +6,6 @@ import { TodoItem } from 'src/common/interfaces/todo_item.interface';
 
 @Controller('api/todoLists/:listId/todoItems')
 export class TodoItemsController {
-  private readonly syncDisabled = true;
   constructor(private todoItemService: TodoItemsService) { }
 
   @Get()
@@ -22,7 +21,7 @@ export class TodoItemsController {
   @Post()
   create(@Param('listId') listId: number, @Body() createTodoItemDto: CreateTodoItemDto): TodoItem {
     const dto: CreateTodoItemDto = { ...createTodoItemDto, listId, completed: false };
-    return this.todoItemService.create(dto, this.syncDisabled);
+    return this.todoItemService.create(dto);
   }
 
   @Put('/:todoItemId')

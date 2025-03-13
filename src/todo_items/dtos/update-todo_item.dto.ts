@@ -3,4 +3,5 @@ export class UpdateTodoItemDto {
     completed: boolean;
     //Only For Seed
     listId?: number;
+    updated_at?: Date;
 }

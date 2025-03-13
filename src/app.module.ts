@@ -6,6 +6,7 @@ import { BullModule } from '@nestjs/bull';
 import { QueueModule } from './queue/queue.module';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ExpressAdapter } from '@bull-board/express';
     BullBoardModule.forRoot({
       route: '/queues',
       adapter: ExpressAdapter
-    }), QueueModule, TodoListsModule, TodoItemsModule, HttpModule],
+    }),
+    ScheduleModule.forRoot(), QueueModule, TodoListsModule, TodoItemsModule, HttpModule],
   controllers: [],
   providers: [],
 })
