@@ -2,18 +2,14 @@ import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { TodoItemsService } from './todo_items.service';
 import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
-import { TodoItem } from 'src/interfaces/todo_item.interface';
-import { BaseNestedController } from 'src/common/base.nested-controller';
+import { TodoItem } from 'src/common/interfaces/todo_item.interface';
 
 @Controller('api/todoLists/:listId/todoItems')
-export class TodoItemsController extends BaseNestedController<TodoItem, CreateTodoItemDto, UpdateTodoItemDto> {
-  constructor(private todoItemService: TodoItemsService) {
-    super(todoItemService);
-  }
+export class TodoItemsController {
+  constructor(private todoItemService: TodoItemsService) { }
 
   @Get()
   index(@Param('listId') listId: number): TodoItem[] {
-
     return this.todoItemService.findAllByKeyId(listId);
   }
 

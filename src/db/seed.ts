@@ -10,17 +10,14 @@ export async function seed(app: NestExpressApplication) {
     const todoListsService = app.get(TodoListsService);
     const todoItemsService = app.get(TodoItemsService);
 
-    // Excecute all seeds
     await Promise.all([
       seedTodoLists(todoListsService),
-      seedTodoItems(todoItemsService),
+      // seedTodoItems(todoItemsService),
     ]);
 
 
     console.log('🌱 Succesfully seeded.');
   } catch (error) {
     console.error('❌ Error while seeding:', error);
-  } finally {
-    await app.close();
   }
 }
