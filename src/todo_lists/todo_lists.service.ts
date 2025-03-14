@@ -16,6 +16,7 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
 
   all(): TodoList[] {
     return this.items.map((todoList: TodoList) => {
+      this.logger.log(`Fetching all ${this.entityName}`)
       const items = this.todoItemsService.findAllByKeyId(todoList.id);
       todoList.items = items;
       return todoList;
@@ -23,6 +24,7 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
   }
 
   get(id: number): TodoList {
+    this.logger.log(`Fetching ${this.entityName} with ID: ${id}`);
     const todoList = this.items.find((x: any) => Number(x.id) === Number(id));
     if (todoList) {
       const items = this.todoItemsService.findAllByKeyId(todoList.id);
@@ -40,12 +42,15 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
       itemsToDelete.forEach((item) => {
         this.todoItemsService.delete(item.id);
       });
-
       this.items.splice(index, 1);
+
+      this.logger.log(`Updated ${this.entityName} with ID: ${id}`);
       if (!disableSync) {
         this.syncTodoList(deletedItem, 'delete');
       }
     }
+    this.logger.error(`${this.entityName} with ID ${id} not found for update`);
+    throw new Error(`${this.entityName} with ID ${id} not found for update`);
   }
 
   syncTodoList(todoList: TodoList, operation: OperationType): void {

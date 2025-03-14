@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { TodoItem } from 'src/common/interfaces/todo_item.interface';
 import { TodoList } from 'src/common/interfaces/todo_list.interface';
@@ -9,10 +9,9 @@ import { ExternalTodoList } from 'src/common/interfaces/external.base.interfaces
 
 @Injectable()
 export class ExternalApiService {
-    //TODO: Move to env
-    //TODO: Add loggers
     private readonly baseUrl = 'http://localhost';
     private readonly todoListUrl = `${this.baseUrl}/todolists`;
+    private readonly logger = new Logger(this.constructor.name);
 
     constructor(private readonly httpService: HttpService) { }
 
@@ -24,9 +23,14 @@ export class ExternalApiService {
         };
 
         try {
+            this.logger.log(`Creating TodoList in External API | ${JSON.stringify(dto)}`);
+
             const result = await (lastValueFrom(this.httpService.post(`${this.todoListUrl}`, dto)));
+
+            this.logger.log(`TodoList created in External API | ${JSON.stringify(result.data)}`);
             return result.data;
         } catch (error) {
+            this.logger.error(`Failed to create TodoList: ${error.message}`);
             throw new Error(`Failed to create TodoList: ${error.message}`);
         }
     }
@@ -36,33 +40,43 @@ export class ExternalApiService {
             name: todoList.name,
         };
         try {
+            this.logger.log(`Updating TodoList in External API | ${JSON.stringify(dto)}`);
+
             const result = await (lastValueFrom(this.httpService.patch(`${this.todoListUrl}/${todoList.id}`, dto)));
+
+            this.logger.log(`TodoList updated in External API | ${JSON.stringify(result.data)}`);
             return result.data;
         } catch (error) {
+            this.logger.error(`Failed to update TodoList: ${error.message}`);
             throw new Error(`Failed to update TodoList: ${error.message}`);
         }
     }
 
     async deleteTodoList(todoList: TodoList) {
         try {
+            this.logger.log(`Deleting TodoList in External API | ID: ${todoList.id}`);
+
             const result = await (lastValueFrom(this.httpService.delete(`${this.todoListUrl}/${todoList.id}`)));
+
+            this.logger.log(`TodoList deleted in External API | ${JSON.stringify(result.data)}`);
             return result.data;
         } catch (error) {
-            if (error.response?.status === 404) {
-                console.log(`TodoList ${todoList.id} already deleted.`);
-            } else {
-                throw new Error(`Failed to delete TodoList ${todoList.id}: ${error.message}`);
-            }
+            this.logger.error(`TodoList ${todoList.id} already deleted.`);
+            throw new Error(`Failed to delete TodoList ${todoList.id}: ${error.message}`);
         }
     }
 
     async fetchTodoLists(): Promise<ExternalTodoList[]> {
         try {
+            this.logger.log(`Fetching TodoLists in External API`);
+
             const result = await (lastValueFrom(this.httpService.get(`${this.todoListUrl}`)));
+
+            this.logger.log(`TodoLists fetched in External API | ${JSON.stringify(result.data)}`);
             return result.data;
-        } catch (e) {
-            console.error('Error fetching TodoLists', e);
-            return [];
+        } catch (error) {
+            this.logger.error(`Failed to fetch TodoLists: ${error.message}`);
+            throw new Error(`Failed to fetch TodoLists: ${error.message}`);
         }
     }
 }
