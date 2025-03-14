@@ -5,7 +5,6 @@ import { ExternalApiService } from 'src/external-api/external-api.service';
 
 @Processor('challengeQueue')
 export class QueueProcessor {
-
     private readonly logger = new Logger(QueueProcessor.name);
     constructor(
         private readonly externalApiService: ExternalApiService,
@@ -28,7 +27,7 @@ export class QueueProcessor {
                     await this.externalApiService.deleteTodoList(data);
                     break;
                 default:
-                    this.logger.warn(`Unknown operation: ${operation}`);
+                    this.logger.error(`Unknown operation: ${operation}`);
                     throw new Error(`Unknown operation: ${operation}`);
             }
 

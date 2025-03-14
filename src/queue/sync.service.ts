@@ -21,7 +21,7 @@ export class SyncSchedulerService {
     async handleCron() {
         this.logger.log('🔄 Checking for new TodoLists from external API...');
 
-        // this.syncExternalWithLocal();
+        this.syncExternalWithLocal();
 
         this.logger.log('✅ Sync completed');
     }
