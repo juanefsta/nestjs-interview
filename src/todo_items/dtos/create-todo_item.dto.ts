@@ -1,5 +1,5 @@
 export class CreateTodoItemDto {
-    listId: number;
-    description: string;
-    completed: boolean;
+  listId: number;
+  description: string;
+  completed: boolean;
 }

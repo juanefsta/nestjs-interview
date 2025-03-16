@@ -22,8 +22,7 @@ export async function seed(app: NestExpressApplication) {
 
     await seedTodoItems(todoItemsService).catch((error) => {
       logger.error(`Seeding Todo Items failed: ${error.message}`, error.stack);
-    }
-    );
+    });
 
     logger.log('Seeding process completed successfully.');
   } catch (error) {

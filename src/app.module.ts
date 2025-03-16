@@ -18,10 +18,15 @@ import { ScheduleModule } from '@nestjs/schedule';
     }),
     BullBoardModule.forRoot({
       route: '/queues',
-      adapter: ExpressAdapter
+      adapter: ExpressAdapter,
     }),
-    ScheduleModule.forRoot(), QueueModule, TodoListsModule, TodoItemsModule, HttpModule],
+    ScheduleModule.forRoot(),
+    QueueModule,
+    TodoListsModule,
+    TodoItemsModule,
+    HttpModule,
+  ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,10 +1,9 @@
-import { NotFoundException } from "@nestjs/common";
-import { TodoItemsController } from "./todo_items.controller";
-import { Test, TestingModule } from "@nestjs/testing";
-import { TodoItemsService } from "./todo_items.service";
-import { CreateTodoItemDto } from "./dtos/create-todo_item.dto";
-import { UpdateTodoItemDto } from "./dtos/update-todo_item.dto";
-
+import { NotFoundException } from '@nestjs/common';
+import { TodoItemsController } from './todo_items.controller';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TodoItemsService } from './todo_items.service';
+import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
+import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
 
 const mockTodoItem = { id: 1, listId: 1, name: 'Test Item', completed: false };
 
@@ -60,15 +59,32 @@ describe('TodoItemsController', () => {
 
   describe('create', () => {
     it('should create and return a todo item', () => {
-      const dto: CreateTodoItemDto = { description: 'New Item', completed: false, listId: 1 };
-      expect(controller.create(1, dto)).toEqual({ id: 2, listId: 1, description: 'New Item', completed: false });
-      expect(mockTodoItemService.create).toHaveBeenCalledWith({ ...dto, listId: 1, completed: false });
+      const dto: CreateTodoItemDto = {
+        description: 'New Item',
+        completed: false,
+        listId: 1,
+      };
+      expect(controller.create(1, dto)).toEqual({
+        id: 2,
+        listId: 1,
+        description: 'New Item',
+        completed: false,
+      });
+      expect(mockTodoItemService.create).toHaveBeenCalledWith({
+        ...dto,
+        listId: 1,
+        completed: false,
+      });
     });
   });
 
   describe('update', () => {
     it('should update and return a todo item', () => {
-      const dto: UpdateTodoItemDto = { description: 'Updated Item', listId: 1, completed: true };
+      const dto: UpdateTodoItemDto = {
+        description: 'Updated Item',
+        listId: 1,
+        completed: true,
+      };
       expect(controller.update(1, dto)).toEqual({ ...mockTodoItem, ...dto });
       expect(mockTodoItemService.update).toHaveBeenCalledWith(1, dto);
     });

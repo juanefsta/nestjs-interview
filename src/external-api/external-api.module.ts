@@ -4,8 +4,8 @@ import { HttpModule } from '@nestjs/axios';
 import { TodoListsModule } from '../todo_lists/todo_lists.module';
 
 @Module({
-    imports: [HttpModule, forwardRef(() => TodoListsModule)],
-    providers: [ExternalApiService],
-    exports: [ExternalApiService],
+  imports: [HttpModule, forwardRef(() => TodoListsModule)],
+  providers: [ExternalApiService],
+  exports: [ExternalApiService],
 })
-export class ExternalApiModule { }
+export class ExternalApiModule {}

@@ -13,6 +13,33 @@ $ npm install
 $ npm run start
 ```
 
+## Running the tests
+
+```bash
+$ npm run test
+```
+
+# Version Control Strategy
+
+## Feature Branches
+
+I will create feature branches based on the task list provided. The naming convention for the branches will be:
+
+- **Branch Name Format**: `feat-{taskId}/{taskName}`
+  - Example: `feat-2/synchronization-logic-implementation`
+
+Each feature branch will be dedicated to a specific task or group of tasks.
+
+## Commit Message Convention
+
+For each commit, I will follow the commit message format:
+
+- **Commit Message Format**: `task-{taskId} {message}`
+  - Example: `task-2 Implement synchronization logic to create new TodoLists`
+  
+This will ensure clear tracking of progress and maintainability of the codebase. Each commit will correspond directly to a specific task in the task list.
+
+
 # Tasks List
 
 ## 1. **Initial Setup**
@@ -65,23 +92,3 @@ $ npm run start
 - **Description**: Propose additional improvements and changes.
   - **Task 9.1**: Suggest improvements to the external API to optimize performance.
   - **Task 9.2**: Propose improvements to the synchronization system (real-time updates).
-
-# Version Control Strategy
-
-## Feature Branches
-
-I will create feature branches based on the task list provided. The naming convention for the branches will be:
-
-- **Branch Name Format**: `feat-{taskId}/{taskName}`
-  - Example: `feat-2/synchronization-logic-implementation`
-
-Each feature branch will be dedicated to a specific task or group of tasks.
-
-## Commit Message Convention
-
-For each commit, I will follow the commit message format:
-
-- **Commit Message Format**: `task-{taskId} {message}`
-  - Example: `task-2 Implement synchronization logic to create new TodoLists`
-  
-This will ensure clear tracking of progress and maintainability of the codebase. Each commit will correspond directly to a specific task in the task list.

@@ -1,7 +1,7 @@
-import { BaseInterface } from "./base.interface";
+import { BaseInterface } from './base.interface';
 
 export interface TodoItem extends BaseInterface {
-    listId: number;
-    description: string;
-    completed: boolean;
+  listId: number;
+  description: string;
+  completed: boolean;
 }

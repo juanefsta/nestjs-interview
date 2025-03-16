@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list.dto';
 import { UpdateTodoListDto } from './dtos/update-todo_list.dto';
 import { TodoList } from '../common/interfaces/todo_list.interface';
@@ -13,7 +6,11 @@ import { TodoListsService } from './todo_lists.service';
 import { BaseController } from '../common/base.controller';
 
 @Controller('api/todoLists')
-export class TodoListsController extends BaseController<TodoList, CreateTodoListDto, UpdateTodoListDto> {
+export class TodoListsController extends BaseController<
+  TodoList,
+  CreateTodoListDto,
+  UpdateTodoListDto
+> {
   constructor(private todoListsService: TodoListsService) {
     super(todoListsService);
   }

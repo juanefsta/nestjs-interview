@@ -8,10 +8,13 @@ export type EntityName = 'TodoList' | 'TodoItem';
 export abstract class BaseService<T extends BaseInterface, C, U> {
   protected readonly items: T[] = [];
   protected readonly logger = new Logger(this.constructor.name);
-  constructor(protected readonly queueService: QueueService<T>, protected readonly entityName: EntityName) { }
+  constructor(
+    protected readonly queueService: QueueService<T>,
+    protected readonly entityName: EntityName,
+  ) {}
 
   all(): T[] {
-    this.logger.log(`Fetching all ${this.entityName}`)
+    this.logger.log(`Fetching all ${this.entityName}`);
     return this.items;
   }
 
@@ -51,10 +54,16 @@ export abstract class BaseService<T extends BaseInterface, C, U> {
 
   update(id: number, dto: U, disableSync?: boolean): T {
     try {
-      const itemIndex = this.items.findIndex((x) => Number(x.id) === Number(id));
+      const itemIndex = this.items.findIndex(
+        (x) => Number(x.id) === Number(id),
+      );
       if (itemIndex === -1) {
-        this.logger.error(`${this.entityName} with ID ${id} not found for update`);
-        throw new Error(`${this.entityName} with ID ${id} not found for update`);
+        this.logger.error(
+          `${this.entityName} with ID ${id} not found for update`,
+        );
+        throw new Error(
+          `${this.entityName} with ID ${id} not found for update`,
+        );
       }
       const itemToUpdate = this.items[itemIndex];
       this.items[itemIndex] = {
@@ -85,7 +94,9 @@ export abstract class BaseService<T extends BaseInterface, C, U> {
         this.queueService.syncDelete(deletedItem, this.entityName);
       }
     }
-    this.logger.error(`${this.entityName} with ID ${id} not found for deletion`);
+    this.logger.error(
+      `${this.entityName} with ID ${id} not found for deletion`,
+    );
     throw new Error(`${this.entityName} with ID ${id} not found for deletion`);
   }
 }

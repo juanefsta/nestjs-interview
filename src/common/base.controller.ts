@@ -1,8 +1,17 @@
-import { Get, Post, Put, Delete, Param, Body, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { BaseService } from './base.service';
 import { BaseInterface } from './interfaces/base.interface';
 export abstract class BaseController<T extends BaseInterface, C, U> {
-  constructor(protected readonly service: BaseService<T, C, U>) { }
+  constructor(protected readonly service: BaseService<T, C, U>) {}
 
   @Get()
   index(): T[] {

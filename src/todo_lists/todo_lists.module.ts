@@ -8,6 +8,6 @@ import { TodoItemsModule } from '../todo_items/todo_items.module';
   imports: [QueueModule, forwardRef(() => TodoItemsModule)],
   controllers: [TodoListsController],
   providers: [TodoListsService],
-  exports: [TodoListsService]
+  exports: [TodoListsService],
 })
-export class TodoListsModule { }
+export class TodoListsModule {}

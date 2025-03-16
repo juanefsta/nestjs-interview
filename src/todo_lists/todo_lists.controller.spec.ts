@@ -14,9 +14,21 @@ describe('TodoListsController', () => {
   let queueService: QueueService<TodoList>;
   let todoItemService: TodoItemsService;
 
-  const mockTodoItemList: TodoItem[] = [{ id: 1, description: 'Test Item', completed: false, created_at: new Date(), updated_at: new Date(), listId: 1 }];
+  const mockTodoItemList: TodoItem[] = [
+    {
+      id: 1,
+      description: 'Test Item',
+      completed: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+      listId: 1,
+    },
+  ];
 
-  const mockTodoList = [{ id: 1, name: 'Test List', items: mockTodoItemList }, { id: 2, name: 'Test List 2', items: [] }];
+  const mockTodoList = [
+    { id: 1, name: 'Test List', items: mockTodoItemList },
+    { id: 2, name: 'Test List 2', items: [] },
+  ];
 
   const mockTodoListsService = {
     all: jest.fn(() => mockTodoList),
@@ -34,16 +46,22 @@ describe('TodoListsController', () => {
   };
 
   const mockTodoItemsService = {
-    findAllByKeyId: jest.fn((id: number) => mockTodoItemList.filter((x) => Number(x.listId) === Number(id))),
+    findAllByKeyId: jest.fn((id: number) =>
+      mockTodoItemList.filter((x) => Number(x.listId) === Number(id)),
+    ),
     delete: jest.fn((id) => {
       if (id !== 1) throw new NotFoundException(`Item with ID ${id} not found`);
     }),
-  }
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TodoListsController],
-      providers: [{ provide: TodoListsService, useValue: mockTodoListsService }, { provide: QueueService, useValue: mockQueueService }, { provide: TodoItemsService, useValue: mockTodoItemsService }],
+      providers: [
+        { provide: TodoListsService, useValue: mockTodoListsService },
+        { provide: QueueService, useValue: mockQueueService },
+        { provide: TodoItemsService, useValue: mockTodoItemsService },
+      ],
     }).compile();
 
     controller = module.get<TodoListsController>(TodoListsController);
@@ -85,7 +103,11 @@ describe('TodoListsController', () => {
   describe('create', () => {
     it('should create a new todo list', () => {
       const dto: CreateTodoListDto = { name: 'New List', items: [] };
-      expect(controller.create(dto)).toEqual({ id: 2, name: 'New List', items: [] });
+      expect(controller.create(dto)).toEqual({
+        id: 2,
+        name: 'New List',
+        items: [],
+      });
       expect(service.create).toHaveBeenCalledWith({ ...dto, items: [] });
     });
 
@@ -110,12 +132,21 @@ describe('TodoListsController', () => {
 
       expect(controller.create(dto)).toEqual(createdTodoList);
       expect(service.create).toHaveBeenCalledWith({ ...dto, items: [] });
-      expect(queueService.syncCreate).toHaveBeenCalledWith(createdTodoList, 'TodoList');
+      expect(queueService.syncCreate).toHaveBeenCalledWith(
+        createdTodoList,
+        'TodoList',
+      );
     });
 
     it('should create a new todo list without syncing if disableSync is true', () => {
       const dto: CreateTodoListDto = { name: 'New List', items: [] };
-      const createdTodoList = { id: 2, name: 'New List', items: [], created_at: expect.any(Date), updated_at: expect.any(Date) };
+      const createdTodoList = {
+        id: 2,
+        name: 'New List',
+        items: [],
+        created_at: expect.any(Date),
+        updated_at: expect.any(Date),
+      };
 
       jest.spyOn(service, 'create').mockReturnValue(createdTodoList);
       jest.spyOn(queueService, 'syncCreate');
@@ -132,17 +163,22 @@ describe('TodoListsController', () => {
     it('should delete a todo list and sync by default', () => {
       const id = 1;
       jest.spyOn(service, 'delete').mockImplementation(() => {
-        const index = mockTodoList.findIndex((x: TodoList) => Number(x.id) === Number(id));
+        const index = mockTodoList.findIndex(
+          (x: TodoList) => Number(x.id) === Number(id),
+        );
         if (index > -1) {
-          const deletedItem = { ...mockTodoList[index], updated_at: new Date(), created_at: new Date() };
-          const itemsToDelete = todoItemService.findAllByKeyId(deletedItem.id);;
+          const deletedItem = {
+            ...mockTodoList[index],
+            updated_at: new Date(),
+            created_at: new Date(),
+          };
+          const itemsToDelete = todoItemService.findAllByKeyId(deletedItem.id);
           itemsToDelete.forEach((item) => {
             todoItemService.delete(item.id);
           });
           mockTodoList.splice(index, 1);
           queueService.syncDelete(deletedItem, 'TodoList');
         }
-
       });
       jest.spyOn(queueService, 'syncDelete');
 
@@ -161,5 +197,4 @@ describe('TodoListsController', () => {
       expect(() => controller.delete(999)).toThrow(NotFoundException);
     });
   });
-
 });
