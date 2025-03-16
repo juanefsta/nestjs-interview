@@ -10,7 +10,7 @@ import { CreateTodoListDto } from './dtos/create-todo_list.dto';
 import { UpdateTodoListDto } from './dtos/update-todo_list.dto';
 import { TodoList } from '../common/interfaces/todo_list.interface';
 import { TodoListsService } from './todo_lists.service';
-import { BaseController } from 'src/common/base.controller';
+import { BaseController } from '../common/base.controller';
 
 @Controller('api/todoLists')
 export class TodoListsController extends BaseController<TodoList, CreateTodoListDto, UpdateTodoListDto> {

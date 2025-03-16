@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { ExternalApiService } from './external-api.service';
 import { HttpModule } from '@nestjs/axios';
-import { TodoListsModule } from 'src/todo_lists/todo_lists.module';
+import { TodoListsModule } from '../todo_lists/todo_lists.module';
 
 @Module({
     imports: [HttpModule, forwardRef(() => TodoListsModule)],

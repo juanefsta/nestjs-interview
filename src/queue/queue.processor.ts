@@ -1,7 +1,7 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { ExternalApiService } from 'src/external-api/external-api.service';
+import { ExternalApiService } from '../external-api/external-api.service';
 
 @Processor('challengeQueue')
 export class QueueProcessor {

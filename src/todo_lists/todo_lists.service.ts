@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list.dto';
 import { UpdateTodoListDto } from './dtos/update-todo_list.dto';
 import { TodoList } from '../common/interfaces/todo_list.interface';
-import { BaseService } from 'src/common/base.service';
-import { QueueService } from 'src/queue/queue.service';
-import { TodoItemsService } from 'src/todo_items/todo_items.service';
+import { BaseService } from '../common/base.service';
+import { QueueService } from '../queue/queue.service';
+import { TodoItemsService } from '../todo_items/todo_items.service';
 
 type OperationType = 'create' | 'update' | 'delete';
 @Injectable()
@@ -25,17 +25,20 @@ export class TodoListsService extends BaseService<TodoList, CreateTodoListDto, U
 
   get(id: number): TodoList {
     this.logger.log(`Fetching ${this.entityName} with ID: ${id}`);
-    const todoList = this.items.find((x: any) => Number(x.id) === Number(id));
-    if (todoList) {
-      const items = this.todoItemsService.findAllByKeyId(todoList.id);
-      todoList.items = items;
+    const index = this.items.findIndex((x: TodoList) => Number(x.id) === Number(id));
+    if (index === -1) {
+      this.logger.error(`${this.entityName} with ID ${id} not found`);
+      throw new NotFoundException(`${this.entityName} with ID ${id} not found`);
     }
+    const todoList = this.items[index];
+    const items = this.todoItemsService.findAllByKeyId(todoList.id);
+    todoList.items = items;
     return todoList;
   }
 
 
   delete(id: number, disableSync?: boolean): void {
-    const index = this.items.findIndex((x: any) => Number(x.id) === Number(id));
+    const index = this.items.findIndex((x: TodoList) => Number(x.id) === Number(id));
     if (index > -1) {
       const deletedItem = this.items[index];
       const itemsToDelete = this.todoItemsService.findAllByKeyId(deletedItem.id);

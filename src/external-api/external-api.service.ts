@@ -1,11 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
-import { TodoItem } from 'src/common/interfaces/todo_item.interface';
-import { TodoList } from 'src/common/interfaces/todo_list.interface';
+import { TodoList } from '../common/interfaces/todo_list.interface';
 import { CreateExternalTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateExternalTodoItemDto } from './dtos/update-todo_item.dto';
-import { ExternalTodoList } from 'src/common/interfaces/external.base.interfaces';
+import { ExternalTodoList } from '../common/interfaces/external.base.interfaces';
 
 @Injectable()
 export class ExternalApiService {
@@ -76,7 +75,6 @@ export class ExternalApiService {
             return result.data;
         } catch (error) {
             this.logger.error(`Failed to fetch TodoLists: ${error.message}`);
-            throw new Error(`Failed to fetch TodoLists: ${error.message}`);
         }
     }
 }
