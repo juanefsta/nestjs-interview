@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common'
 import { TodoItemsService } from './todo_items.service';
 import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
-import { TodoItem } from 'src/common/interfaces/todo_item.interface';
+import { TodoItem } from '../common/interfaces/todo_item.interface';
 
 @Controller('api/todoLists/:listId/todoItems')
 export class TodoItemsController {

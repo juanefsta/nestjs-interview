@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ExternalApiService } from '../external-api/external-api.service';
-import { TodoListsService } from 'src/todo_lists/todo_lists.service';
-import { TodoItem } from 'src/common/interfaces/todo_item.interface';
-import { TodoItemsService } from 'src/todo_items/todo_items.service';
+import { TodoListsService } from '../todo_lists/todo_lists.service';
+import { TodoItem } from '../common/interfaces/todo_item.interface';
+import { TodoItemsService } from '../todo_items/todo_items.service';
 
 @Injectable()
 export class SyncSchedulerService {
@@ -32,41 +32,49 @@ export class SyncSchedulerService {
             this.todoListsService.all()  // Obtener datos locales
         ]);
 
-        const localMap = new Map(localLists.map(list => [list.id, list]));
-        const externalMap = new Map(externalLists.map(list => {
-            const parsedId = parseInt(list.source_id, 10);
-            if (isNaN(parsedId)) {
-                throw new Error(`Invalid list id: ${list.source_id}`);
+        try {
+            if (!externalLists || !localLists) {
+                this.logger.warn('No data found');
+                return;
             }
-            return [parsedId, list]
-        }));
+            const localMap = new Map(localLists.map(list => [list.id, list]));
+            const externalMap = new Map(externalLists.map(list => {
+                const parsedId = parseInt(list.source_id, 10);
+                if (isNaN(parsedId)) {
+                    throw new Error(`Invalid list id: ${list.source_id}`);
+                }
+                return [parsedId, list]
+            }));
 
-        // Procesar nuevas listas en el API externo
-        for (const [id, externalList] of externalMap) {
+            // Procesar nuevas listas en el API externo
+            for (const [id, externalList] of externalMap) {
 
-            const localList = localMap.get(id);
-            if (!localList) {
-                await this.todoListsService.create(externalList, this.syncDisabled);
-                continue;
+                const localList = localMap.get(id);
+                if (!localList) {
+                    await this.todoListsService.create(externalList, this.syncDisabled);
+                    continue;
+                }
+
+                // Si la lista existe en ambos, comparar y actualizar si hay cambios
+                if (
+                    localList.name !== externalList.name ||
+                    new Date(localList.updated_at).getTime() < new Date(externalList.updated_at).getTime()
+                ) {
+                    await this.todoListsService.update(id, { name: externalList.name, updated_at: externalList.updated_at }, this.syncDisabled);
+                }
+
+                // Comparar y sincronizar items dentro de la lista
+                await this.syncItems(localList.items, externalList.items, id);
             }
 
-            // Si la lista existe en ambos, comparar y actualizar si hay cambios
-            if (
-                localList.name !== externalList.name ||
-                new Date(localList.updated_at).getTime() < new Date(externalList.updated_at).getTime()
-            ) {
-                await this.todoListsService.update(id, { name: externalList.name, updated_at: externalList.updated_at }, this.syncDisabled);
+            // Opcional: Eliminar listas locales que ya no están en el API externo
+            for (const [id] of localMap) {
+                if (!externalMap.has(id)) {
+                    await this.todoListsService.delete(id, this.syncDisabled);
+                }
             }
-
-            // Comparar y sincronizar items dentro de la lista
-            await this.syncItems(localList.items, externalList.items, id);
-        }
-
-        // Opcional: Eliminar listas locales que ya no están en el API externo
-        for (const [id] of localMap) {
-            if (!externalMap.has(id)) {
-                await this.todoListsService.delete(id, this.syncDisabled);
-            }
+        } catch (error) {
+            this.logger.error(`Error syncing external data: ${error.message}`);
         }
     }
 

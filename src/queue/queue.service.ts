@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { JobOptions, Queue } from 'bull';
-import { EntityName } from 'src/common/base.service';
+import { EntityName } from '../common/base.service';
 
 @Injectable()
 export class QueueService<T> {

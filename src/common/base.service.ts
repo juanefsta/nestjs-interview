@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { nextId } from './utils/id.util';
-import { QueueService } from 'src/queue/queue.service';
+import { QueueService } from '../queue/queue.service';
 import { BaseInterface } from './interfaces/base.interface';
 
 export type EntityName = 'TodoList' | 'TodoItem';
@@ -20,7 +20,7 @@ export abstract class BaseService<T extends BaseInterface, C, U> {
 
     const item = this.items.find((x: any) => Number(x.id) === Number(id));
     if (!item) {
-      throw new Error(`${this.entityName} with ID ${id} not found`);
+      throw new NotFoundException(`${this.entityName} with ID ${id} not found`);
     }
 
     return item;

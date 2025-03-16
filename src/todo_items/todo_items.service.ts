@@ -1,10 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateTodoItemDto } from './dtos/create-todo_item.dto';
 import { UpdateTodoItemDto } from './dtos/update-todo_item.dto';
-import { BaseService } from 'src/common/base.service';
-import { TodoItem } from 'src/common/interfaces/todo_item.interface';
-import { QueueService } from 'src/queue/queue.service';
-import { TodoListsService } from 'src/todo_lists/todo_lists.service';
+import { BaseService } from '../common/base.service';
+import { TodoItem } from '../common/interfaces/todo_item.interface';
+import { QueueService } from '../queue/queue.service';
+import { TodoListsService } from '../todo_lists/todo_lists.service';
 
 @Injectable()
 export class TodoItemsService extends BaseService<TodoItem, CreateTodoItemDto, UpdateTodoItemDto> {

@@ -1,4 +1,4 @@
-import { TodoItemsService } from 'src/todo_items/todo_items.service';
+import { TodoItemsService } from '../todo_items/todo_items.service';
 import { TodoListsService } from '../todo_lists/todo_lists.service';
 import { seedTodoItems } from './todo-items.seed';
 import { seedTodoLists } from './todo-lists.seed';
