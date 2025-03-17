@@ -32,11 +32,13 @@ export abstract class BaseService<T extends BaseInterface, C, U> {
   create(dto: C, disableSync?: boolean): T {
     try {
       const now = new Date();
+      const id = nextId(this.items);
       const newItem: any = {
-        id: nextId(this.items),
+        id,
         ...dto,
         created_at: now,
         updated_at: now,
+        source_id: id.toString(),
       };
 
       this.items.push(newItem);
@@ -93,6 +95,7 @@ export abstract class BaseService<T extends BaseInterface, C, U> {
       if (!disableSync) {
         this.queueService.syncDelete(deletedItem, this.entityName);
       }
+      return;
     }
     this.logger.error(
       `${this.entityName} with ID ${id} not found for deletion`,

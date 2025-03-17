@@ -46,7 +46,7 @@ export class ExternalApiService {
     };
     try {
       this.logger.log(
-        `Updating TodoList in External API | ${JSON.stringify(dto)}`,
+        `Updating TodoList in External API | ${JSON.stringify(dto)} | ID: ${todoList.id}`,
       );
 
       const result = await lastValueFrom(

@@ -13,7 +13,7 @@ export class SyncSchedulerService {
     private readonly todoListsService: TodoListsService,
     private readonly todoItemService: TodoItemsService,
     private readonly externalApiService: ExternalApiService,
-  ) {}
+  ) { }
 
   // Ejecutar cada 10 segundos (300ms)
   @Cron(CronExpression.EVERY_10_SECONDS)
@@ -39,7 +39,10 @@ export class SyncSchedulerService {
       const localMap = new Map(localLists.map((list) => [list.id, list]));
       const externalMap = new Map(
         externalLists.map((list) => {
-          const parsedId = parseInt(list.source_id, 10);
+          // Cómo source_id es opcional, se considera que fue creada en la api externa
+          // por lo que forzamos su creación en la base de datos local comparando luego con su id
+          const id = list.source_id ?? '-1';
+          const parsedId = parseInt(id, 10);
           if (isNaN(parsedId)) {
             throw new Error(`Invalid list id: ${list.source_id}`);
           }
@@ -50,16 +53,24 @@ export class SyncSchedulerService {
       // Procesar nuevas listas en el API externo
       for (const [id, externalList] of externalMap) {
         const localList = localMap.get(id);
-        if (!localList) {
+
+        // Validar si no existe un elemento en localMap con source_id ===  externalList.id
+        const localMapItemWithSourceId = Array.from(localMap.values()).find(
+          (list) => list.source_id === externalList.id.toString(),
+        );
+
+        const list = localList ?? localMapItemWithSourceId;
+
+        if (!list) {
           await this.todoListsService.create(externalList, this.syncDisabled);
           continue;
         }
 
         // Si la lista existe en ambos, comparar y actualizar si hay cambios
         if (
-          localList.name !== externalList.name ||
-          new Date(localList.updated_at).getTime() <
-            new Date(externalList.updated_at).getTime()
+          list.name !== externalList.name ||
+          new Date(list.updated_at).getTime() <
+          new Date(externalList.updated_at).getTime()
         ) {
           await this.todoListsService.update(
             id,
@@ -69,14 +80,7 @@ export class SyncSchedulerService {
         }
 
         // Comparar y sincronizar items dentro de la lista
-        await this.syncItems(localList.items, externalList.items, id);
-      }
-
-      // Opcional: Eliminar listas locales que ya no están en el API externo
-      for (const [id] of localMap) {
-        if (!externalMap.has(id)) {
-          await this.todoListsService.delete(id, this.syncDisabled);
-        }
+        await this.syncItems(list.items, externalList.items, id);
       }
     } catch (error) {
       this.logger.error(`Error syncing external data: ${error.message}`);
@@ -97,6 +101,7 @@ export class SyncSchedulerService {
     for (const [id, externalItem] of externalItemMap) {
       const localItem = localItemMap.get(id);
       if (!localItem) {
+        this.logger.debug(`S.I 3`);
         const newItem = { ...externalItem, listId };
         await this.todoItemService.create(newItem, this.syncDisabled);
         continue;
@@ -107,7 +112,7 @@ export class SyncSchedulerService {
         localItem.description !== externalItem.description ||
         localItem.completed !== externalItem.completed ||
         new Date(localItem.updated_at).getTime() <
-          new Date(externalItem.updated_at).getTime()
+        new Date(externalItem.updated_at).getTime()
       ) {
         await this.todoItemService.update(
           id,

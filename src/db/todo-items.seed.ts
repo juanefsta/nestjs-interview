@@ -3,7 +3,7 @@ import { TodoItemsService } from '../todo_items/todo_items.service';
 
 export async function seedTodoItems(todoItemsService: TodoItemsService) {
   const logger = new Logger('Seed - TodoItem');
-  const syncDisabled = true;
+  const syncDisabled = false;
 
   logger.log('Seeding Todo Items...');
 

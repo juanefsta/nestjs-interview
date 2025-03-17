@@ -12,7 +12,7 @@ export class QueueService<T> {
   ) {}
 
   private readonly defaultSyncOptions: JobOptions = {
-    attempts: 1,
+    attempts: 3,
     backoff: 5000,
     removeOnComplete: true,
     removeOnFail: false,

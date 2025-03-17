@@ -1,0 +1,58 @@
+Introducción:
+
+Dada la consigna del challenge, procedí a realizar un analisis tanto de los requerimientos como la definición de la API externa y lo ya resuelto en la primera etapa.
+Una vez finalizado creé un listado de tareas y una forma de trabajo (feature/branch) para poder organizar el trabajo y poder realizar un seguimiento de las tareas.
+
+A continuación voy a ir mencionando las tareas y una breve descripción de lo realizado como también de las decisiones, mejoras y bloqueos que se presentaron.
+
+1. Initial Setup
+
+Realicé un fork del proyecto original y comencé a trabajar en los refactorings necesarios y crear las interfaces para poder comenzar a trabajar en la resolución del challenge.
+Me pareció buena idea realizar un seed para evitar tener que estar creando los datos de prueba manualmente.
+También agregué el modulo de Swagger para poder documentar la API (vale aclarar que no terminé de implementarlo correctamente, donde se podría documentar de mejor manera cada endpoint agregando más decoradores)
+
+Decidí crear clases Base, para controladores y servicios, para poder tener un mejor manejo de las dependencias y poder realizar tests unitarios de manera más sencilla.
+(Luego, me di cuenta que quizás fue apresurado porque tuve que hacer algunas modificaciones para poder realizar los tests o para cumplir los requerimientos pero intuí que estaba bueno mostrar una forma de trabajo más ordenada)
+
+Otra mejora que podría haber realizado aca es implementar Factories, para poder crear los objetos de manera más sencilla y poder reutilizarlos en los tests.
+
+2. Synchronization Logic Implementation
+
+Aquí pude haberlo realizado de una manera más simple, donde directamente una vez realizada el CRUD, se ejecute la sincronización de los datos con la API externa.
+De nuevo, me pareció más ordenado y tambien mostrar el conocimiento sobre el uso de una cola para poder realizar la sincronización de manera asíncrona.
+Además sirve la integracion con Bull para poder realizar los debidos retries en caso de que la API externa no responda.
+Para realizar la sincronización con la API externa, decidí utilizar un Cron Job, para que cada 10 segundos se ejecute la sincronización.
+
+3. Error Handling and Logging
+
+Cree un interceptor para poder loggear cada endpoint que se ejecute.
+Si bien considero que hay un abuso de logs en las funciones, lo hice de esta manera para poder llevar un seguimiento de lo que se ejecuta y poder debuggear de manera más sencilla.
+Creo además que se podía haber realizado un mejor manejo de errores, donde se podría haber creado un middleware para poder capturar los errores y devolver un mensaje más amigable al usuario.
+
+4. Resilience and Reliability
+
+Aca como mencioné previamente, al usar Bull, se pueden realizar los retries desde la configuración, y al usar un cron job, también se ejecutará un retry cada 10 segundos.
+El manejo de errores dentro de las funcionalidades core, usando sentencias de try catch, hacen que el sistema sea más robusto y pueda seguir funcionando en caso de que haya un error.
+
+5. Performance Optimization
+
+Este punto fue lo que me hizo decidir por usar tanto Bull como Cron Jobs. 
+Si bien, 10 segundos es bastante, se podría haber realizado una configuración para que se ejecute cada 1 minuto o cada 5 minutos, dependiendo de la criticidad de los datos.
+Además, se podría haber realizado un cache de los datos, para que no se tenga que estar consultando la API externa cada vez que se necesite un dato.
+
+6. Write Test Cases
+
+Aca es donde más tiempo invertí, ya que tuve que realizar varios cambios en la estructura del proyecto para poder realizar los tests.
+Decidí usar Jest, ya que es una herramienta que conozco aunque no es mi fuerte el unit testing.
+Claramente se podría haber realizado un mejor manejo de los mocks, para poder realizar los tests de manera más sencilla, utilizar Factories para crear los objetos y poder reutilizarlos en los tests, como también probar los servicios de manera más aislada o agregar más tests, como por ejemplo el del cron job, que no pude realizar.
+
+
+Futuras mejoras:
+
+- Manejar variables de entorno. Ya que no se realizó en este proyecto, se podría haber realizado para poder tener un mejor manejo de las configuraciones, como por ejemplo la URL de la API externa, el tiempo de ejecución del cron job, etc. 
+- Los errores se capturan, pero se lanzan directamente como Error(), lo que puede ocultar detalles importantes del error, tampoco No hay un sistema de reintento ante fallos temporales en la API externa. Se solucionaría realizando un mejor manejo de errores, para poder devolver mensajes más amigables al usuario.
+- Implementar Factories para poder crear los objetos de manera más sencilla y reutilizarlos en los tests.
+- Realizar un mejor manejo de los mocks, para poder realizar los tests de manera más sencilla.
+- Si bien, al desconocer si la API Externa posee un acople para websockets o eventos, se podría haber realizado una integración con websockets para poder realizar la sincronización de manera más eficiente.
+- Las implementaciones en la sincronizacion, no cubren casos críticos como fallos en la API externa o concurrencia, por lo que se podría haber realizado pruebas de concurrencia.
+- Implementar un sistema de cache para no tener que estar consultando la API externa cada vez que se necesite un dato, esto se lograría con Redis por ejemplo.

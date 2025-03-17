@@ -62,9 +62,10 @@ export class TodoListsService extends BaseService<
       if (!disableSync) {
         this.syncTodoList(deletedItem, 'delete');
       }
+      return;
     }
-    this.logger.error(`${this.entityName} with ID ${id} not found for update`);
-    throw new Error(`${this.entityName} with ID ${id} not found for update`);
+    this.logger.error(`${this.entityName} with ID ${id} not found for delete`);
+    throw new Error(`${this.entityName} with ID ${id} not found for delete`);
   }
 
   syncTodoList(todoList: TodoList, operation: OperationType): void {

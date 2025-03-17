@@ -8,7 +8,7 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Seeding on app start
+  // // Seeding on app start
   await seed(app);
 
   // Swagger
@@ -21,7 +21,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalInterceptors(new LoggingInterceptor()); // 🔥 Aplicar interceptor global
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   await app.listen(3000);
 }
